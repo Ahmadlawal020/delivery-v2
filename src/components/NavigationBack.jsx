@@ -2,15 +2,15 @@ import { useNavigate } from "react-router-dom"; // Ensure correct import
 import { FaArrowLeft } from "react-icons/fa6";
 import PropTypes from "prop-types"; // Add prop validation
 
-const NavigationBack = ({ routeName = "/", routeTitle = "Back" }) => {
+const NavigationBack = ({ routeTitle = "Back" }) => {
   const navigate = useNavigate();
 
   return (
-    <nav className="p-2 bg-white border-b mb-6">
+    <nav className="p-2 bg-white border-b border-gray-300 mb-3 w-full">
       <div className="h-11 w-full flex items-center gap-2 capitalize">
         <button
           className="px-2"
-          onClick={() => navigate(routeName)}
+          onClick={() => navigate(-1)}
           aria-label="Go back"
         >
           <FaArrowLeft className="text-xl" />

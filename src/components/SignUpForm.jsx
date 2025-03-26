@@ -192,3 +192,243 @@ const SignUpForm = ({ onSwitchToLogin }) => {
 };
 
 export default SignUpForm;
+
+// import React, { useState } from "react";
+// import { useRegisterUserMutation } from "../services/api/authApiSlice";
+// import { useDispatch } from "react-redux";
+// import { setCredentials } from "../services/authSlice";
+// import toast, { Toaster } from "react-hot-toast";
+// import { FaArrowLeft } from "react-icons/fa";
+// import {
+//   CheckCircleIcon,
+//   EyeIcon,
+//   EyeSlashIcon,
+// } from "@heroicons/react/24/outline";
+
+// const SignUpForm = ({ onSwitchToLogin }) => {
+//   const [formData, setFormData] = useState({
+//     email: "",
+//     password: "",
+//     confirmPassword: "",
+//     userRole: "Customer",
+//   });
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+//   const [registerUser, { isLoading }] = useRegisterUserMutation();
+//   const dispatch = useDispatch();
+
+//   const validateEmail = (email) => {
+//     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     return regex.test(email);
+//   };
+
+//   const validatePassword = (password) => {
+//     return password.length >= 8;
+//   };
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validateEmail(formData.email)) {
+//       toast.error("Please enter a valid email address.");
+//       return;
+//     }
+
+//     if (!validatePassword(formData.password)) {
+//       toast.error("Password must be at least 8 characters long.");
+//       return;
+//     }
+
+//     if (formData.password !== formData.confirmPassword) {
+//       toast.error("Passwords do not match.");
+//       return;
+//     }
+
+//     try {
+//       const response = await registerUser({
+//         email: formData.email,
+//         password: formData.password,
+//         role: formData.userRole,
+//       }).unwrap();
+
+//       dispatch(
+//         setCredentials({
+//           accessToken: response.accessToken,
+//           user: response.user,
+//         })
+//       );
+
+//       toast.success("Account created successfully! Switching to sign-in...");
+//       setTimeout(() => onSwitchToLogin(), 2000);
+//     } catch (err) {
+//       toast.error("Registration failed. Please try again.");
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen">
+//       {/* Full-width content area */}
+//       <div className="max-w-7xl mx-auto p-6">
+//         <Toaster />
+
+//         {/* Sign Up Card - Matching the login form width */}
+//         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+//           <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+//             <h2 className="font-medium text-gray-800 text-xl">
+//               Create Your Account
+//             </h2>
+//           </div>
+
+//           <div className="p-8">
+//             <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 {/* Email */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Email
+//                   </label>
+//                   <input
+//                     type="email"
+//                     name="email"
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                     placeholder="Enter your email"
+//                     value={formData.email}
+//                     onChange={handleChange}
+//                     required
+//                   />
+//                 </div>
+
+//                 {/* User Role */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     User Role
+//                   </label>
+//                   <select
+//                     name="userRole"
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 capitalize"
+//                     value={formData.userRole}
+//                     onChange={handleChange}
+//                     required
+//                   >
+//                     <option value="Customer">Customer</option>
+//                     <option value="Employee">Employee</option>
+//                   </select>
+//                 </div>
+
+//                 {/* Password */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Password
+//                   </label>
+//                   <div className="relative">
+//                     <input
+//                       type={showPassword ? "text" : "password"}
+//                       name="password"
+//                       className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                       placeholder="Enter password"
+//                       value={formData.password}
+//                       onChange={handleChange}
+//                       required
+//                     />
+//                     <button
+//                       type="button"
+//                       className="absolute inset-y-0 right-0 pr-3 flex items-center"
+//                       onClick={() => setShowPassword(!showPassword)}
+//                     >
+//                       {showPassword ? (
+//                         <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+//                       ) : (
+//                         <EyeIcon className="h-5 w-5 text-gray-400" />
+//                       )}
+//                     </button>
+//                   </div>
+//                 </div>
+
+//                 {/* Confirm Password */}
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Confirm Password
+//                   </label>
+//                   <div className="relative">
+//                     <input
+//                       type={showConfirmPassword ? "text" : "password"}
+//                       name="confirmPassword"
+//                       className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                       placeholder="Confirm password"
+//                       value={formData.confirmPassword}
+//                       onChange={handleChange}
+//                       required
+//                     />
+//                     <button
+//                       type="button"
+//                       className="absolute inset-y-0 right-0 pr-3 flex items-center"
+//                       onClick={() =>
+//                         setShowConfirmPassword(!showConfirmPassword)
+//                       }
+//                     >
+//                       {showConfirmPassword ? (
+//                         <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+//                       ) : (
+//                         <EyeIcon className="h-5 w-5 text-gray-400" />
+//                       )}
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className="pt-4">
+//                 <button
+//                   type="submit"
+//                   className="w-full md:w-auto flex justify-center items-center gap-2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+//                   disabled={isLoading}
+//                 >
+//                   {isLoading ? (
+//                     "Creating Account..."
+//                   ) : (
+//                     <>
+//                       <CheckCircleIcon className="h-5 w-5" />
+//                       Create Account
+//                     </>
+//                   )}
+//                 </button>
+//               </div>
+//             </form>
+
+//             <div className="mt-8 pt-6 border-t border-gray-200">
+//               <div className="relative">
+//                 <div className="absolute inset-0 flex items-center">
+//                   <div className="w-full border-t border-gray-300"></div>
+//                 </div>
+//                 <div className="relative flex justify-center">
+//                   <span className="px-4 bg-white text-sm text-gray-500">
+//                     Already have an account?
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div className="mt-6">
+//                 <button
+//                   onClick={onSwitchToLogin}
+//                   className="w-full md:w-auto flex justify-center py-3 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+//                 >
+//                   Sign In
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SignUpForm;

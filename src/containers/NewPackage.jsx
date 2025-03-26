@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAddPackageMutation } from "../services/api/packageApiSlice";
+import { useDispatch } from "react-redux";
+import { expandToMid } from "../services/bottomSheetSlice";
 import toast, { Toaster } from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 
 const NewPackageForm = () => {
   const [addPackage, { isLoading }] = useAddPackageMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { id } = useAuth();
 
@@ -22,6 +25,8 @@ const NewPackageForm = () => {
   const [description, setDescription] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [pickupDate, setPickupDate] = useState("");
+  const [priceOffer, setPriceOffer] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash"); // Default to cash
 
   // Handle next step
   const handleNext = () => {
@@ -31,6 +36,10 @@ const NewPackageForm = () => {
     }
     if (step === 2 && (!recipientName || !recipientPhone)) {
       toast.error("Please fill in recipient name and phone number.");
+      return;
+    }
+    if (step === 3 && (!description || !pickupDate)) {
+      toast.error("Please fill in description and pickup date.");
       return;
     }
     setStep(step + 1);
@@ -52,10 +61,11 @@ const NewPackageForm = () => {
       !recipientName ||
       !recipientPhone ||
       !description ||
-      !deliveryDate ||
-      !pickupDate
+      !pickupDate ||
+      !priceOffer ||
+      !paymentMethod
     ) {
-      toast.error("All fields are required.");
+      toast.error("Required fields are missing.");
       return;
     }
 
@@ -69,12 +79,15 @@ const NewPackageForm = () => {
         recipientPhone,
         recipientEmail,
         description,
-        deliveryDate,
+        deliveryDate, // This is now optional
         pickupDate,
+        priceOffer,
+        paymentMethod,
       }).unwrap();
 
       // Show success toast
       toast.success("Package created successfully!");
+      dispatch(expandToMid());
 
       // Redirect to the packages page after a short delay
       setTimeout(() => {
@@ -258,7 +271,7 @@ const NewPackageForm = () => {
                 htmlFor="deliveryDate"
                 className="text-xs font-medium text-black mb-2 cursor-pointer"
               >
-                Delivery Date
+                Delivery Date (Optional)
               </label>
               <input
                 type="datetime-local"
@@ -266,8 +279,66 @@ const NewPackageForm = () => {
                 value={deliveryDate}
                 onChange={(e) => setDeliveryDate(e.target.value)}
                 className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                type="button"
+                className="mt-4 bg-gray-500 rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 mr-2 text-white font-medium text-sm hover:bg-gray-600 capitalize"
+                onClick={handlePrevious}
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                className="mt-4 bg-[#0056D2] rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 text-white font-medium text-sm hover:bg-[#3b69a5] capitalize"
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Pricing and Payment */}
+        {step === 4 && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Pricing and Payment</h2>
+            <div className="flex flex-col text-xs w-full mb-2">
+              <label
+                htmlFor="priceOffer"
+                className="text-xs font-medium text-black mb-2 cursor-pointer"
+              >
+                Price Offer
+              </label>
+              <input
+                type="number"
+                id="priceOffer"
+                placeholder="Enter price offer"
+                value={priceOffer}
+                onChange={(e) => setPriceOffer(e.target.value)}
+                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
                 required
               />
+            </div>
+            <div className="flex flex-col text-xs w-full mb-2">
+              <label
+                htmlFor="paymentMethod"
+                className="text-xs font-medium text-black mb-2 cursor-pointer"
+              >
+                Payment Method
+              </label>
+              <select
+                id="paymentMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
+                required
+              >
+                <option value="cash">Cash on Delivery</option>
+                <option value="app">Pay with App</option>
+              </select>
             </div>
 
             <div className="flex justify-between">

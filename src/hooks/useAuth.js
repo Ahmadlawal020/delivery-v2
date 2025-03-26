@@ -18,7 +18,15 @@ const useAuth = () => {
     if (isEmployee) status = "Employee";
     if (isAdmin) status = "Admin";
 
-    return { id, email, roles, status, isEmployee, firstName, lastName }; // Changed userId to id
+    return {
+      id,
+      email,
+      roles,
+      status,
+      isEmployee,
+      firstName,
+      lastName,
+    }; // Changed userId to id
   }
 
   return {

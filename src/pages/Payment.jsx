@@ -173,7 +173,7 @@ const Payment = () => {
           </Link>
         </div>
       ) : (
-        <h1>Hi</h1>
+        ""
       )}
     </section>
   );

@@ -1,4 +1,4 @@
-import { Account, Home, Tracking } from "../containers";
+import { Account, Home, PackagesList, Tracking } from "../containers";
 import { Routes, Route, Outlet } from "react-router-dom";
 import { PiPackageFill } from "react-icons/pi";
 import { NavLink } from "react-router-dom";
@@ -105,7 +105,7 @@ const DashPage = ({ currentUserId }) => {
         <DashLayout currentUserId={currentUserId} />
       </div>
       {/* DashNavigation will be hidden when isFullScreen is true */}
-      <div className="fixed bottom-0 w-full">
+      <div className="fixed bottom-0 w-full shadow border-t border-gray-300">
         <DashNavigation />
       </div>
     </section>
@@ -118,8 +118,8 @@ export const DashRoutes = () => {
       <Route path="/" element={<DashPage />}>
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
-        <Route path="tracking" element={<Tracking />} />
-        <Route path="delivery" element={<Delivery />} />
+        <Route path="tracking/*" element={<Tracking />} />
+        <Route path="delivery/*" element={<Delivery />}></Route>
         <Route path="account" element={<Account />} />
       </Route>
     </Routes>

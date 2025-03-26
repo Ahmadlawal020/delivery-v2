@@ -3,6 +3,7 @@ import { setCredentials, logout } from "../authSlice"; // Assuming you have a lo
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://deliverybe-v2.onrender.com",
+  // baseUrl: "http://localhost:5000",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.accessToken;

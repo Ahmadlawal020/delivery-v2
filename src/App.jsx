@@ -17,8 +17,9 @@ import {
   EditPackage,
   EditUser,
   NewPackage,
-  PackagesList,
+  PackageDetail,
   PersonalInfo,
+  Security,
   UsersList,
 } from "./containers";
 import Prefetch from "./services/Prefetch";
@@ -45,14 +46,15 @@ const App = () => {
               <Route path="/users-list" element={<UsersList />} />
               <Route path="/personal-info" element={<PersonalInfo />} />
               <Route path="edit-user/:id" element={<EditUser />} />
-              <Route path="/packages-list" element={<PackagesList />} />
+              <Route path="package-detail/:id" element={<PackageDetail />} />
               <Route path="/new-package" element={<NewPackage />} />
               <Route path="edit-package/:id" element={<EditPackage />} />
+              <Route path="/security" element={<Security />} />
               <Route path="/*" element={<Dash />} />
-              <Route path="*" element={<div>404 Not Found</div>} />
             </Route>
           </Route>
         </Route>
+        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </>
   );

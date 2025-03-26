@@ -1,11 +1,11 @@
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "./apiSlice";
 
-const packagesAdapter = createEntityAdapter({
-  sortComparer: (a, b) => (a.deliveryStatus === "Delivered" ? 1 : -1),
-});
+const packagesAdapter = createEntityAdapter();
 
 const initialState = packagesAdapter.getInitialState();
+
+// Create an entity adapter for users
 
 export const packageApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,13 +18,22 @@ export const packageApiSlice = apiSlice.injectEndpoints({
         }));
         return packagesAdapter.setAll(initialState, loadedPackages);
       },
-      providesTags: (result, error, arg) =>
+      providesTags: (result) =>
         result?.ids
           ? [
               { type: "Package", id: "LIST" },
               ...result.ids.map((id) => ({ type: "Package", id })),
             ]
           : [{ type: "Package", id: "LIST" }],
+    }),
+    getPackageById: builder.query({
+      // Changed from mutation to query
+      query: (id) => `/api/packages/${id}`,
+      transformResponse: (responseData) => ({
+        ...responseData,
+        id: responseData._id,
+      }),
+      providesTags: (result, error, id) => [{ type: "Package", id }],
     }),
     addPackage: builder.mutation({
       query: (newPackage) => ({
@@ -45,30 +54,13 @@ export const packageApiSlice = apiSlice.injectEndpoints({
       ],
     }),
     deletePackage: builder.mutation({
-      query: ({ id }) => ({
+      query: (id) => ({
         url: `/api/packages/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: "Package", id: "LIST" }],
-    }),
-    assignDeliveryPerson: builder.mutation({
-      query: ({ id, deliveryPersonId }) => ({
-        url: `/api/packages/${id}/assign`,
-        method: "PATCH",
-        body: { deliveryPersonId },
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Package", id: arg.id },
-      ],
-    }),
-    updateDeliveryStatus: builder.mutation({
-      query: ({ id, deliveryStatus, paymentStatus }) => ({
-        url: `/api/packages/${id}/status`,
-        method: "PATCH",
-        body: { deliveryStatus, paymentStatus },
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Package", id: arg.id },
+      invalidatesTags: (result, error, id) => [
+        { type: "Package", id },
+        { type: "Package", id: "LIST" },
       ],
     }),
   }),
@@ -76,11 +68,10 @@ export const packageApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetPackagesQuery,
+  useGetPackageByIdQuery, // Updated to match the query change
   useAddPackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,
-  useAssignDeliveryPersonMutation,
-  useUpdateDeliveryStatusMutation,
 } = packageApiSlice;
 
 // Selectors
@@ -89,11 +80,13 @@ export const selectPackagesResult =
 
 const selectPackagesData = createSelector(
   selectPackagesResult,
-  (packagesResult) => packagesResult.data ?? initialState
+  (packagesResult) => packagesResult.data
 );
 
 export const {
   selectAll: selectAllPackages,
   selectById: selectPackageById,
   selectIds: selectPackageIds,
-} = packagesAdapter.getSelectors((state) => selectPackagesData(state));
+} = packagesAdapter.getSelectors(
+  (state) => selectPackagesData(state) ?? initialState
+);

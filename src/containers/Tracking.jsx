@@ -1,35 +1,64 @@
+import React from "react";
 import { NavigationBack } from "../components";
-import { useGetPackagesQuery } from "../services/api/packageApiSlice";
-import useAuth from "../hooks/useAuth";
-import { PackageCard } from "../components";
+import { section } from "framer-motion/client";
+import { NavLink } from "react-router-dom"; // Fixed import (added -dom)
+import { Routes, Route } from "react-router-dom";
+import PendingPackage from "./PendingPackage";
+import AcceptedPackage from "./AcceptedPackage";
+
+const TrackingListNav = () => {
+  return (
+    <nav className="px-2 border-b-[1px] border-[#dadae8]">
+      <ul className="flex text-center">
+        <li>
+          <NavLink
+            to="/tracking/pending"
+            className={({ isActive }) =>
+              `flex items-center h-9 ${
+                isActive ? "border-b-[2px] border-[green] text-[green]" : ""
+              }`
+            }
+          >
+            <span className="text-sm font-medium py-0 px-4 uppercase">
+              pending
+            </span>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/tracking/in-transit"
+            className={({ isActive }) =>
+              `flex items-center h-9 ${
+                isActive ? "border-b-[2px] border-[green] text-[green]" : ""
+              }`
+            }
+          >
+            <span className="text-sm font-medium py-0 px-4 uppercase">
+              In Transit
+            </span>
+          </NavLink>
+        </li>
+      </ul>
+    </nav>
+  );
+};
 
 const Tracking = () => {
-  const { id } = useAuth(); // Get the authenticated user's ID
-  const { data: packages, isLoading, isError } = useGetPackagesQuery();
-
-  const userPackages = packages?.entities
-    ? Object.values(packages.entities).filter((pkg) => pkg.senderId._id === id)
-    : [];
-
   return (
-    <section className="px-4 py-3">
+    <section>
       <NavigationBack routeName="/" routeTitle="Track your Delivery Orders" />
-
-      {/* Handle loading and error states */}
-      {isLoading && <p className="text-gray-600">Loading packages...</p>}
-      {isError && <p className="text-red-600">Failed to load packages.</p>}
-
-      {/* Display packages if available */}
-      {userPackages.length > 0 ? (
-        <div className="space-y-4">
-          {userPackages.map((pkg) => {
-            console.log(pkg);
-            return <PackageCard key={pkg.packageId} packageData={pkg} />;
-          })}
+      <section>
+        <div className="px-2">
+          <TrackingListNav />
+          <div>
+            <Routes>
+              <Route index element={<PendingPackage />} />
+              <Route path="pending" element={<PendingPackage />} />
+              <Route path="in-transit" element={<AcceptedPackage />} />
+            </Routes>
+          </div>
         </div>
-      ) : (
-        <p className="text-gray-600 mt-4">No packages found.</p>
-      )}
+      </section>
     </section>
   );
 };
