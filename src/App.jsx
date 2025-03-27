@@ -42,7 +42,6 @@ const App = () => {
               <Route path="/support" element={<Support />} />
               <Route path="/promotion" element={<Promotion />} />
               <Route path="/about" element={<About />} />
-
               <Route path="/users-list" element={<UsersList />} />
               <Route path="/personal-info" element={<PersonalInfo />} />
               <Route path="edit-user/:id" element={<EditUser />} />

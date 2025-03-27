@@ -11,8 +11,51 @@ import { div } from "framer-motion/client";
 import NewPackage from "./NewPackage";
 import { IoSearch } from "react-icons/io5";
 import shippingImg from "../assets/shippingImg.png";
+import { expandToMid } from "../services/bottomSheetSlice";
 
 import useAuth from "../hooks/useAuth";
+
+import { useNavigate } from "react-router-dom";
+import { TruckIcon } from "@heroicons/react/24/outline";
+import PropTypes from "prop-types";
+
+const WelcomeBanner = ({ userName }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleViewPackages = () => {
+    dispatch(expandToMid());
+    navigate("/delivery/pending");
+  };
+
+  return (
+    <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-6 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Welcome back, {userName}!
+          </h2>
+          <p className="text-gray-600 capitalize">
+            We Glad to have you with us
+          </p>
+        </div>
+
+        <button
+          onClick={handleViewPackages}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors shadow-sm"
+        >
+          <TruckIcon className="h-5 w-5" />
+          View Available Packages
+        </button>
+      </div>
+    </div>
+  );
+};
+
+WelcomeBanner.propTypes = {
+  userName: PropTypes.string.isRequired,
+  packageCount: PropTypes.number.isRequired,
+};
 
 const AddPackageContainerNav = ({ isFullScreen, handleClose }) => {
   return (
@@ -74,7 +117,8 @@ const AddPackageContainerDisplayCards = ({ handleCardClick }) => {
 };
 
 const AddPackageContainer = () => {
-  const { roles } = useAuth();
+  const { roles, firstName } = useAuth();
+
   const dispatch = useDispatch();
   const isFullScreen = useSelector((state) => state.bottomSheet.isFullScreen);
   const screenHeight = window.innerHeight;
@@ -125,11 +169,7 @@ const AddPackageContainer = () => {
           <AddPackageContainerDisplayCards handleCardClick={handleCardClick} />
         )}
         {roles.includes("Employee")
-          ? isFullScreen && (
-              <div>
-                <h1>Welcome, Employee!</h1>
-              </div>
-            )
+          ? isFullScreen && <WelcomeBanner userName={firstName} />
           : isFullScreen && (
               <div className="flex justify-center">
                 <NewPackage />
