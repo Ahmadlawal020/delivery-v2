@@ -2,11 +2,44 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAddPackageMutation } from "../services/api/packageApiSlice";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { expandToMid } from "../services/bottomSheetSlice";
 import toast, { Toaster } from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 
+import { selectUserById } from "../services/api/userApiSlice";
+import { UpdateUserInfoButton } from "../components";
+import {
+  UserIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+} from "@heroicons/react/24/outline";
+import {
+  DocumentTextIcon,
+  CalendarIcon,
+  TruckIcon,
+} from "@heroicons/react/24/outline";
+import {
+  CurrencyDollarIcon,
+  CreditCardIcon,
+  ChevronDownIcon,
+  CheckIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/outline";
+import {
+  BuildingStorefrontIcon,
+  HomeIcon,
+  HomeModernIcon,
+} from "@heroicons/react/24/outline";
+
 const NewPackageForm = () => {
+  const { id: userId } = useAuth();
+  const user = useSelector((state) => selectUserById(state, userId));
+  const isProfileComplete =
+    user && user.firstName && user.lastName && user.phoneNumber;
+
   const [addPackage, { isLoading }] = useAddPackageMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -101,6 +134,17 @@ const NewPackageForm = () => {
     }
   };
 
+  if (!isProfileComplete) {
+    return (
+      <div className="max-sm:w-[320px] w-[396px] px-4 py-1">
+        <Toaster />
+        <div className="text-center my-8">
+          <UpdateUserInfoButton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-sm:w-[320px] w-[396px] px-4 py-1">
       <Toaster /> {/* Add Toaster component to display toasts */}
@@ -110,252 +154,308 @@ const NewPackageForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Step 1: Pickup and Delivery Addresses */}
         {step === 1 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Enter locations</h2>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="pickupAddress"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Pickup Address
-              </label>
-              <input
-                type="text"
-                id="pickupAddress"
-                placeholder="Enter Pickup Address"
-                value={pickupAddress}
-                onChange={(e) => setPickupAddress(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="font-medium text-gray-800 text-xl flex items-center gap-2">
+                Enter Locations
+              </h2>
             </div>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="deliveryAddress"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Delivery Address
-              </label>
-              <input
-                type="text"
-                id="deliveryAddress"
-                placeholder="Enter Delivery Address"
-                value={deliveryAddress}
-                onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
+
+            <div className="p-8">
+              <div className="space-y-6 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                    <TruckIcon className="h-4 w-4 text-gray-500" />
+                    Pickup Address
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={pickupAddress}
+                      onChange={(e) => setPickupAddress(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="123 Main St, City, Country"
+                      required
+                    />
+                    <BuildingStorefrontIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                    <HomeIcon className="h-4 w-4 text-gray-500" />
+                    Delivery Address
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="456 Elm St, City, Country"
+                      required
+                    />
+                    <HomeModernIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="w-full md:w-auto flex justify-center items-center gap-2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    Next
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
             </div>
-            <button
-              type="button"
-              className="mt-4 bg-[#0056D2] rounded-sm pt-3 pb-3 pl-9 pr-9 w-full text-white font-medium text-sm hover:bg-[#3b69a5] capitalize"
-              onClick={handleNext}
-            >
-              Next
-            </button>
           </div>
         )}
 
         {/* Step 2: Recipient Details */}
         {step === 2 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Recipient Details</h2>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="recipientName"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Recipient Name
-              </label>
-              <input
-                type="text"
-                id="recipientName"
-                placeholder="Enter Recipient Name"
-                value={recipientName}
-                onChange={(e) => setRecipientName(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <h2 className="font-medium text-gray-800 text-xl">
+                Recipient Details
+              </h2>
             </div>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="recipientPhone"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Recipient Phone
-              </label>
-              <input
-                type="text"
-                id="recipientPhone"
-                placeholder="Enter Recipient Phone"
-                value={recipientPhone}
-                onChange={(e) => setRecipientPhone(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
-            </div>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="recipientEmail"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Recipient Email
-              </label>
-              <input
-                type="email"
-                id="recipientEmail"
-                placeholder="Enter Recipient Email"
-                value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-              />
-            </div>
-            <div className="flex justify-between">
-              <button
-                type="button"
-                className="mt-4 bg-gray-500 rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 mr-2 text-white font-medium text-sm hover:bg-gray-600 capitalize"
-                onClick={handlePrevious}
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                className="mt-4 bg-[#0056D2] rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 text-white font-medium text-sm hover:bg-[#3b69a5] capitalize"
-                onClick={handleNext}
-              >
-                Next
-              </button>
+
+            <div className="p-8">
+              <div className="space-y-6 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Recipient Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter recipient name"
+                      required
+                    />
+                    <UserIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Recipient Phone
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={recipientPhone}
+                      onChange={(e) => setRecipientPhone(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter phone number"
+                      required
+                    />
+                    <PhoneIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Recipient Email
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={recipientEmail}
+                      onChange={(e) => setRecipientEmail(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter email address"
+                    />
+                    <EnvelopeIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevious}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    Next
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {/* Step 3: Product Information */}
         {step === 3 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Product Information</h2>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="description"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                placeholder="Enter Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
-            </div>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="pickupDate"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Pickup Date
-              </label>
-              <input
-                type="datetime-local"
-                id="pickupDate"
-                value={pickupDate}
-                onChange={(e) => setPickupDate(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <h2 className="font-medium text-gray-800 text-xl">
+                Product Information
+              </h2>
             </div>
 
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="deliveryDate"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Delivery Date (Optional)
-              </label>
-              <input
-                type="datetime-local"
-                id="deliveryDate"
-                value={deliveryDate}
-                onChange={(e) => setDeliveryDate(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-              />
-            </div>
+            <div className="p-8">
+              <div className="space-y-6 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <div className="relative">
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[120px]"
+                      placeholder="Enter product description"
+                      required
+                    />
+                    <DocumentTextIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                className="mt-4 bg-gray-500 rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 mr-2 text-white font-medium text-sm hover:bg-gray-600 capitalize"
-                onClick={handlePrevious}
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                className="mt-4 bg-[#0056D2] rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 text-white font-medium text-sm hover:bg-[#3b69a5] capitalize"
-                onClick={handleNext}
-              >
-                Next
-              </button>
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Pickup Date
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="datetime-local"
+                        value={pickupDate}
+                        onChange={(e) => setPickupDate(e.target.value)}
+                        className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                      <CalendarIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Delivery Date (Optional)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="datetime-local"
+                        value={deliveryDate}
+                        onChange={(e) => setDeliveryDate(e.target.value)}
+                        className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <TruckIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevious}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    Next
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {/* Step 4: Pricing and Payment */}
         {step === 4 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Pricing and Payment</h2>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="priceOffer"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Price Offer
-              </label>
-              <input
-                type="number"
-                id="priceOffer"
-                placeholder="Enter price offer"
-                value={priceOffer}
-                onChange={(e) => setPriceOffer(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              />
-            </div>
-            <div className="flex flex-col text-xs w-full mb-2">
-              <label
-                htmlFor="paymentMethod"
-                className="text-xs font-medium text-black mb-2 cursor-pointer"
-              >
-                Payment Method
-              </label>
-              <select
-                id="paymentMethod"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                className="border border-[#373a3c] pt-3 pb-3 pl-4 pr-4 rounded-sm text-sm focus:outline-none focus:border-[#0056D2]"
-                required
-              >
-                <option value="cash">Cash on Delivery</option>
-                <option value="app">Pay with App</option>
-              </select>
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <h2 className="font-medium text-gray-800 text-xl">
+                Pricing and Payment
+              </h2>
             </div>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                className="mt-4 bg-gray-500 rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 mr-2 text-white font-medium text-sm hover:bg-gray-600 capitalize"
-                onClick={handlePrevious}
-              >
-                Previous
-              </button>
-              <button
-                type="submit"
-                className="mt-4 bg-[#0056D2] rounded-sm pt-3 pb-3 pl-9 pr-9 w-1/2 text-white font-medium text-sm hover:bg-[#3b69a5] capitalize"
-                disabled={isLoading}
-              >
-                {isLoading ? "Submitting..." : "Create Package"}
-              </button>
+            <div className="p-8">
+              <div className="space-y-6 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Price Offer
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={priceOffer}
+                      onChange={(e) => setPriceOffer(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter price amount"
+                      required
+                    />
+                    <CurrencyDollarIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Payment Method
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                      required
+                    >
+                      <option value="cash">Cash on Delivery</option>
+                      <option value="app">Pay with App</option>
+                    </select>
+                    <CreditCardIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    <ChevronDownIcon className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevious}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                    Previous
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-75 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <ArrowPathIcon className="h-5 w-5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="h-5 w-5" />
+                        Create Package
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
