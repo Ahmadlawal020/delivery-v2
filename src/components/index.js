@@ -9,3 +9,4 @@ export { default as NavigationBack } from "./NavigationBack";
 export { default as UserCard } from "./UserCard";
 export { default as PackageCard } from "./PackageCard";
 export { default as UpdateUserInfoButton } from "./UpdateUserInfoButton";
+export { default as PreLoader } from "./PreLoader";

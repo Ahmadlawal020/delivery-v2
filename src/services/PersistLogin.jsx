@@ -4,6 +4,7 @@ import { useRefreshTokenMutation } from "./api/authApiSlice";
 import usePersist from "../hooks/usePersist";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
+import { PreLoader } from "../components";
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -118,7 +119,7 @@ const PersistLogin = () => {
   } else if (isLoading) {
     //persist: yes, token: no
     // console.log("loading");
-    content = <h1>loading...</h1>;
+    content = <PreLoader />;
   } else if (isError) {
     //persist: yes, token: no
     // console.log("error");
