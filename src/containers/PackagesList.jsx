@@ -3,6 +3,10 @@ import { NavLink } from "react-router-dom"; // Fixed import (added -dom)
 import PendingPackageList from "./PendingPackageList";
 import AcceptedPackageList from "./AcceptedPackageList";
 import { Routes, Route } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { selectUserById } from "../services/api/userApiSlice";
+import { UpdateUserInfoButton } from "../components";
 
 const PackagesListNav = () => {
   return (
@@ -42,16 +46,24 @@ const PackagesListNav = () => {
 };
 
 const PackagesList = () => {
+  const { id: userId } = useAuth();
+  const user = useSelector((state) => selectUserById(state, userId));
+  const isProfileComplete =
+    user && user.firstName && user.lastName && user.phoneNumber;
   return (
     <section>
       <div className="px-2">
         <PackagesListNav />
         <div>
-          <Routes>
-            <Route index element={<PendingPackageList />} />
-            <Route path="pending" element={<PendingPackageList />} />
-            <Route path="in-transit" element={<AcceptedPackageList />} />
-          </Routes>
+          {isProfileComplete ? (
+            <Routes>
+              <Route index element={<PendingPackageList />} />
+              <Route path="pending" element={<PendingPackageList />} />
+              <Route path="in-transit" element={<AcceptedPackageList />} />
+            </Routes>
+          ) : (
+            <UpdateUserInfoButton />
+          )}
         </div>
       </div>
     </section>

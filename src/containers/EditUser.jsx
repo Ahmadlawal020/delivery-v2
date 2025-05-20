@@ -23,7 +23,7 @@ const EditUserForm = ({ user }) => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/personal-info");
+      navigate("/");
     }
   }, [isSuccess, navigate]);
 

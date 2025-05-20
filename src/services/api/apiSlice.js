@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logout } from "../authSlice"; // Assuming you have a logout action
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://deliverybe-v2.onrender.com",
-  // baseUrl: "http://localhost:5001",
+  // baseUrl: "https://deliverybe-v2.onrender.com",
+  baseUrl: "http://localhost:5001",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.accessToken;

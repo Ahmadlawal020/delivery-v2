@@ -1,7 +1,3 @@
-// npm prune
-// npm dedupe
-// npm install
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, X } from "lucide-react";
